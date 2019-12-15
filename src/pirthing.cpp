@@ -11,8 +11,7 @@
 const char* host = "max.kenkl.org";
 const unsigned int clienttimeout = 60000;  //ms for client timeout in the doThing* action
 #define pLED 13 //Pilot light for the PIR, in case it doesn't have its own LED
-#define pIR 5 // the PIR itself - active HIGH.
-#define led 0 // the on-board red LED - light up when calling max
+#define pIR 16 // the PIR itself - active HIGH. 16 is the only place that PULLDOWN works
 #define ledDelay 33000 // ms, of course - how long does the nightlight stay on after PIR trigger?
 unsigned long nowcount, delaycount; // tracking time for non-blocking delays
 const char* urlon = "/lights/pirthing1_on.php"; 
@@ -24,13 +23,12 @@ void hueON(void);
 void hueOFF(void);
 
 void setup() {
-  pinMode(pIR, INPUT_PULLDOWN_16); // PULLDOWN no worky??
+  pinMode(pIR, INPUT_PULLDOWN_16); // internal PULLDOWN only works on GPIO16
   pinMode(pLED, OUTPUT);
-  pinMode(led, OUTPUT);
 
   Serial.begin(9600);
 
-    // We start by connecting to a WiFi network
+// We start by connecting to a WiFi network
 Serial.println();
 Serial.println();
 Serial.print("Connecting to ");
@@ -86,13 +84,11 @@ void hueOFF(void) {
 }
 void doThing(const char* url) {
 
-  digitalWrite(led, 1); // light up a pilot while we connect, send, and get a response.
-
   Serial.println("Got to doThing...");
   Serial.print("connecting to ");
   Serial.println(host);
 
-  // Use WiFiClient class to create TCP connections
+// Use WiFiClient class to create TCP connections
 WiFiClient client;
 const int httpPort = 80;
 if (!client.connect(host, httpPort)) {
@@ -118,7 +114,5 @@ while (client.available() == 0) {
 
   Serial.println("closing connection");
   Serial.println();
-
-  digitalWrite(led, 0); // turn off the pilot
 
 }
