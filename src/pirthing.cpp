@@ -19,9 +19,14 @@ const char* urlon = "/lights/pirthing1_on.php";
 const char* urloff = "/lights/pirthing1_off.php"; 
 bool iState = false; // tracking whether the light is on 
 
+void doThing(const char* url);
+void hueON(void);
+void hueOFF(void);
+
 void setup() {
-  // put your setup code here, to run once:
-  pinMode(pIR, INPUT);
+  pinMode(pIR, INPUT_PULLDOWN_16); // PULLDOWN no worky??
+  pinMode(pLED, OUTPUT);
+  pinMode(led, OUTPUT);
 
   Serial.begin(9600);
 
@@ -54,7 +59,7 @@ void loop() {
   // if the pIR sensor has tripped, update delaycount accordingly.  
   if(digitalRead(pIR) == HIGH) {
     delaycount = nowcount + ledDelay ;
-    //digitalWrite(pLED, HIGH);  //optional, depending on whether the PIR already has an LED,
+    digitalWrite(pLED, HIGH);  //optional, depending on whether the PIR already has an LED,
   }
   else digitalWrite(pLED, LOW);
   
@@ -94,9 +99,6 @@ if (!client.connect(host, httpPort)) {
   Serial.println("connection failed");
   return;
 }
-
-// We now create a URI for the request
-//String url = "/lights/cinema.php";
 
 Serial.print("Requesting URL: ");
 Serial.println(url);
